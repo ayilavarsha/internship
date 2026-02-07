@@ -1,0 +1,70 @@
+import pandas as pd  
+import matplotlib.pyplot as plt  
+import numpy as np  
+
+#Load the CSV file using Pandas
+
+df = pd.read_csv('iris.csv')
+
+#Display the first few rows to verify the data loaded correctly
+print("First 5 rows of the dataset:")
+print(df.head())
+
+#Perform basic data analysis
+print("\nSummary statistics of the dataset:")
+print(df.describe())
+
+#Calculate the average (mean) of a selected column, e.g., 'sepal_length'
+# You can change 'sepal_length' to any numeric column in your CSV.
+selected_column = 'sepal_length'
+average_value = df[selected_column].mean()
+print(f"\nAverage of '{selected_column}': {average_value:.2f}")
+
+# Additional basic analysis: Group by a categorical column (e.g., 'species') and calculate means
+# This shows averages per group, which can be useful for comparison.
+grouped_means = df.groupby('species').mean()
+print("\nAverage values per species:")
+print(grouped_means)
+
+# Step 4: Create visualizations using Matplotlib
+# Set up the figure size for better readability
+plt.figure(figsize=(12, 8))
+
+
+# This helps visualize the distribution of categories.
+plt.subplot(2, 2, 1)  # Create a subplot (2 rows, 2 columns, position 1)
+species_counts = df['species'].value_counts()
+species_counts.plot(kind='bar', color='skyblue')
+plt.title('Bar Chart: Count of Each Species')
+plt.xlabel('Species')
+plt.ylabel('Count')
+plt.xticks(rotation=45)
+
+# This shows relationships between two numeric variables, colored by species.
+plt.subplot(2, 2, 2)  # Position 2
+colors = {'setosa': 'red', 'versicolor': 'green', 'virginica': 'blue'}
+for species, color in colors.items():
+    subset = df[df['species'] == species]
+    plt.scatter(subset['sepal_length'], subset['petal_length'], color=color, label=species, alpha=0.7)
+plt.title('Scatter Plot: Sepal Length vs. Petal Length')
+plt.xlabel('Sepal Length')
+plt.ylabel('Petal Length')
+plt.legend()
+
+
+# This visualizes how strongly variables are related (e.g., positive/negative correlations).
+plt.subplot(2, 2, 3) 
+# Select only numeric columns for correlation
+numeric_df = df.select_dtypes(include=[np.number])
+correlation_matrix = numeric_df.corr()
+
+plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='nearest')
+plt.colorbar()  # Add a color bar to show correlation values
+plt.title('Heatmap: Correlation Matrix')
+# Add labels for rows and columns
+plt.xticks(range(len(correlation_matrix.columns)), correlation_matrix.columns, rotation=45)
+plt.yticks(range(len(correlation_matrix.columns)), correlation_matrix.columns)
+
+#Display all visualizations
+plt.tight_layout()
+plt.show()
